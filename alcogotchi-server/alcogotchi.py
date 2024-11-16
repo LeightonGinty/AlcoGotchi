@@ -1,19 +1,36 @@
 import json
 import socket
 import _thread
+import time
+import random
 
 class Alcogotchi:
     def __init__(self, name):
         self.name = name
+        self.last_drunkentime = time.time()
         self.drunk = 0
         self.health = 100
-        self.alco_coin = 0
+        self.alco_coin = 100
 
-    def __str__(self):
+    def get_alcogotchi(self):
         return self.__dict__
+
+    def double_or_nothing(self, data):
+        if self.alco_coin > 0:
+            bet = dict(data["bet"])
+            self.alco_coin += random.choice([-bet, bet])
+            return self.get_alcogotchi()
+        else:
+            raise Exception("You got no coin")
         
-    def __repr__(self):
-      return self.__dict__
+    def drink(self):
+        if self.last_drunkentime + 60 < time.time():
+            self.last_drunkentime = time.time()
+        self.drunk += 10
+        self.drunk = max(100, self.drunk)
+        return self.get_alcogotchi()
+    
+alcogotchi = Alcogotchi("Brian")
 
 class Server:
     HTTP_CODES = {
@@ -54,7 +71,12 @@ class Server:
                 print("{0} {1} on :{2} from {3}".format(method, route, self.port, client_address[0]))
 
                 if route in self._routes:
-                    self._send(self._routes[route]())
+                    if method == "GET":
+                        self._send(self._routes[route]())
+                    if method == "POST":
+                        data = json.loads(request[-1])
+                        # data as argument
+                        self._send(self._routes[route](data))
                 else:
                     self._send("Route is not defined", 404)
 
@@ -72,16 +94,10 @@ print("Connection avalible on {0}".format(ap.ifconfig()))
     
 
 server = Server()
-alcogotchi = Alcogotchi("Brian")
 server.add_route("/text", lambda: "Hello World!")
-
-def get_alcogotchi():
-    return alcogotchi.__dict__
-
-def beer():
-    alcogotchi.drunk += 1
-    return get_alcogotchi
     
-server.add_route("/brian", get_alcogotchi)
-server.add_route("/beer", beer)
+server.add_route("/", alcogotchi.get_alcogotchi)
+server.add_route("/drink", alcogotchi.drink)
+server.add_route("/gamble", alcogotchi.double_or_nothing)
+
 server.start()
