@@ -1,68 +1,87 @@
-from future import *
-try:
-  import usocket as socket
-except:
-  import socket
-import network
+import json
+import socket
+import _thread
 
-import esp
-esp.osdebug(None)
+class Alcogotchi:
+    def __init__(self, name):
+        self.name = name
+        self.drunk = 0
+        self.health = 100
+        self.alco_coin = 0
 
-import gc
-gc.collect()
+    def __str__(self):
+        return self.__dict__
+        
+    def __repr__(self):
+      return self.__dict__
 
-ssid = 'MicroPython-AP'
-password = '123456789'
+class Server:
+    HTTP_CODES = {
+        200: "OK",
+        404: "Not Found",
+        500: "Internal Server Error",
+    }
+
+    def __init__(self, port=80):
+        self.port = port
+        self.connection = None
+        self._sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self._sock.bind(("", port))
+        self._sock.listen(1)
+        self._routes = {}
+
+    def add_route(self, path, callback, nowait=False):
+        if nowait:
+            self._routes[path] = lambda: (_thread.start_new_thread(callback, ()), None)[1]
+        else:
+            self._routes[path] = callback
+
+    def _send(self, data, code=200):
+        if self.connection is not None:
+            content = json.dumps({"data" if code == 200 else "error": data})
+            self.connection.send(
+                "HTTP/1.1 {0} {2}\r\nContent-Type: application/json\r\n\r\n{2}".format(code, self.HTTP_CODES[code], content).encode()
+            )
+
+    def start(self):
+        print("Server running on port {self.port}...")
+        while True:
+            self.connection, client_address = self._sock.accept()
+            try:
+                request = self.connection.recv(1024).decode().split("\r\n")
+                method, route, _ = request[0].split(" ")
+                print("{0} {1} on :{2} from {3}".format(method, route, self.port, client_address[0]))
+
+                if route in self._routes:
+                    self._send(self._routes[route]())
+                else:
+                    self._send("Route is not defined", 404)
+
+            except Exception as e:
+                print("Error: {0}".format(e))
+                self._send(str(e), 500)
+
+            finally:
+                self.connection.close()
 
 ap = network.WLAN(network.AP_IF)
 ap.active(True)
-ap.config(essid=ssid, password=password)
+ap.config(essid="Cool Server", password="password123")
+print("Connection avalible on {0}".format(ap.ifconfig()))
+    
 
-while ap.active() == False:
-  pass
+server = Server()
+alcogotchi = Alcogotchi("Brian")
+server.add_route("/text", lambda: "Hello World!")
 
-print('Connection successful')
-print(ap.ifconfig())
+def get_alcogotchi():
+    return alcogotchi.__dict__
 
-def web_page(led_successful):
-  if led_successful == 1:
-    gpio_state="Drinking Booze"
-  else:
-    gpio_state="Not Drinking Booze :("
-  
-  html = """<html><head> <title>ESP Web Server</title> <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="data:,"> <style>html{font-family: Helvetica; display:inline-block; margin: 0px auto; text-align: center;}
-  h1{color: #0F3376; padding: 2vh;}p{font-size: 1.5rem;}.button{display: inline-block; background-color: #e7bd3b; border: none; 
-  border-radius: 4px; color: white; padding: 16px 40px; text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}
-  .button2{background-color: #4286f4;}</style></head><body> <h1>ESP Web Server</h1> 
-  <p>Drinking state: <strong>""" + gpio_state + """</strong></p><p><a href="/?led=on"><button class="button">ON</button></a></p>
-  <p><a href="/?led=off"><button class="button button2">OFF</button></a></p></body></html>"""
-  return html
-
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.bind(('', 80))
-s.listen(5)
-
-while True:
-  conn, addr = s.accept()
-  print('Got a connection from %s' % str(addr))
-  request = conn.recv(1024)
-  request = str(request)
-  print('Content = %s' % request)
-  drinking_booze = request.find('/?booze=yes')
-  not_drinking_booze = request.find('/?booze=no')
-  if drinking_booze == 6:
-    print('Drinking booze')
-    response = web_page(1)
-
-    # led.value(1)
-  if not_drinking_booze == 6:
-    print('Not drinking booze')
-    response = web_page(0)
-
-    # led.value(0)
-  conn.send('HTTP/1.1 200 OK\n')
-  conn.send('Content-Type: text/html\n')
-  conn.send('Connection: close\n\n')
-  conn.sendall(response)
-  conn.close()
+def beer():
+    alcogotchi.drunk += 1
+    return get_alcogotchi
+    
+server.add_route("/brian", get_alcogotchi)
+server.add_route("/beer", beer)
+server.start()
