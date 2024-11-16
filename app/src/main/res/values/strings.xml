@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">AlcaGotchi</string>
+    <string name="signature_text">Mes Amigos\n</string>
+    <string name="happy_birthday_text">It\'s Boozing Time</string>
 </resources>
