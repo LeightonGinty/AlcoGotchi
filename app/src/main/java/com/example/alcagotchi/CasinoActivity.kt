@@ -15,6 +15,7 @@
  */
 package com.example.alcagotchi
 
+import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -33,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -99,6 +101,8 @@ fun CasinoOptions(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        val context = LocalContext.current as Activity
+
         Text(
             text = "Your balance: many coin",
             fontSize = 36.sp,
@@ -116,7 +120,7 @@ fun CasinoOptions(modifier: Modifier = Modifier) {
         Button(onClick = { /*TODO*/ }) {
             Text("Gamble 1000 coins")
         }
-        Button(onClick = { /*TODO*/ }) {
+        Button(onClick = { context.finish() }) {
             Text("Exit casino")
         }
     }
