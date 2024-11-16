@@ -28,13 +28,17 @@ playing = True
 startup_time = 0
 for i in range(len(opposing_vehicle_ys)):
   screen.rect(13+opposing_vehicle_lanes[i]*40, opposing_vehicle_ys[i],20,40,(500, 500, 555),1)
-# def play_music():
+def play_music(CHASE):
+  while True:
+    buzzer.melody(CHASE)
 CHASE = "a4:1 b c5 b4 a:2 r a:1 b c5 b4 a:2 r a:2 e5 d# e f e d# e b4:1 c5 d c b4:2 r b:1 c5 d c b4:2 r b:2 e5 d# e f e d# e "
   
 
 
-new_thread = _thread.start_new_thread(buzzer.melody, [CHASE])
+# new_thread = _thread.start_new_thread(play_music, [CHASE])
+
 while playing and driving:
+  
   
   # WAWA = "e3:3 r:1 d#:3 r:1 d:4 r:1 c#:8 "
 
@@ -89,3 +93,4 @@ while playing and driving:
     screen.rect(93,80,20,40,(0, 0, 0),1)
 
   screen.refresh()
+screen.text("GAME OVER", x=10, y=90, ext=1, color=255)
