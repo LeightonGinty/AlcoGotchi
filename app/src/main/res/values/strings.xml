@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">AlcaGotchi</string>
+    <string name="drink_name">Drink</string>
+    <string name="casino_name">Genting</string>
+    <string name="back_button">Back</string>
+
     <string name="signature_text">Mes Amigos\n</string>
     <string name="happy_birthday_text">It\'s Boozing Time</string>
     <string name="welcome_to_casino">It\'s Genting Time</string>
+    <string name="welcome_to_pub">Welcome to the pub</string>
 </resources>
