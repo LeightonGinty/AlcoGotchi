@@ -11,6 +11,7 @@ terminated = False
 def play_music_once(melody_name):
     buzzer.melody(melody_name)
 def drive(base_speed):
+    global driving
     screen.rect(0,0,160,128,(0, 0, 0),1)
     driving = True
     happiness = 9
@@ -31,6 +32,7 @@ def drive(base_speed):
     for i in range(len(opposing_vehicle_ys)):
       screen.rect(13+opposing_vehicle_lanes[i]*40, opposing_vehicle_ys[i],20,40,(500, 500, 555),1)
     def play_music(CHASE):
+      global driving
       while driving:
         buzzer.melody(CHASE)
     CHASE = "a4:1 b c5 b4 a:2 r a:1 b c5 b4 a:2 r a:2 e5 d# e f e d# e b4:1 c5 d c b4:2 r b:1 c5 d c b4:2 r b:2 e5 d# e f e d# e "
@@ -94,7 +96,6 @@ def drive(base_speed):
         screen.rect(13,80,20,40,(0, 0, 0),1)
         screen.rect(53,80,20,40,(0, 0, 0),1)
         screen.rect(93,80,20,40,(0, 0, 0),1)
-
       screen.refresh()
     else:
       screen.rect(0,0,160,128,(0, 0, 0),1)
@@ -283,6 +284,6 @@ server.add_route("/mine", alcogotchi.mine)
 # _thread.start_new_thread(s, ())
 s()
 server.start()
-_thread.exit()
 FUNERAL = "c3:4 c:3 c:1 c:4 d#:3 d:1 d:3 c:1 c:3 b2:1 c3:4 "
+time.sleep(5)
 buzzer.melody(FUNERAL)
