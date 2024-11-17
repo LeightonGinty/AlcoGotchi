@@ -30,6 +30,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,10 +46,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.MutableLiveData
 import com.example.alcagotchi.ui.theme.AlcaGotchiTheme
 import com.example.alcagotchi.ui.theme.AlcaGotchiTheme
 
 class CasinoActivity : ComponentActivity() {
+    private val coin = MutableLiveData<Int>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -63,40 +70,17 @@ class CasinoActivity : ComponentActivity() {
     }
 }
 
-fun gamble(amount: Int) {
+fun gamble(amount: Int): Int {
+    val alcoGotchi = AlcoGotchi.getInstance()
+    alcoGotchi.postGamble(amount)
 
-}
-
-@Composable
-fun CasinoGreetingText(message: String, from: String, modifier: Modifier = Modifier) {
-    // Create a column so that texts don't overlap
-    Column(
-        verticalArrangement = Arrangement.Center,
-        modifier = modifier
-    ) {
-        Text(
-            text = message,
-            fontSize = 100.sp,
-            lineHeight = 116.sp,
-            textAlign = TextAlign.Center,
-            color = Color(0xFF00FF00),
-            modifier = Modifier.padding(top = 16.dp)
-        )
-        Text(
-            text = from,
-            fontSize = 36.sp,
-            color = Color(0xFF00FF00),
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .padding(end = 16.dp)
-                .align(alignment = Alignment.End)
-
-        )
-    }
+    return alcoGotchi.coins
 }
 
 @Composable
 fun CasinoOptions(modifier: Modifier = Modifier) {
+    val coin = remember { mutableIntStateOf(0) }
+
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -104,20 +88,28 @@ fun CasinoOptions(modifier: Modifier = Modifier) {
         val context = LocalContext.current as Activity
 
         Text(
-            text = "Your balance: many coin",
+            text = "Your coins:",
             fontSize = 36.sp,
             color = Color(0xFF00FF00),
             modifier = Modifier
                 .padding(top = 16.dp)
                 .padding(end = 16.dp)
         )
-        Button(onClick = { /*TODO*/ }) {
+        Text(
+            text = coin.value.toString(),
+            fontSize = 36.sp,
+            color = Color(0xFF00FF00),
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .padding(end = 16.dp)
+        )
+        Button(onClick = { coin.intValue = gamble(10) }) {
             Text("Gamble 10 coins")
         }
-        Button(onClick = { /*TODO*/ }) {
+        Button(onClick = { coin.intValue = gamble(100) }) {
             Text("Gamble 100 coins")
         }
-        Button(onClick = { /*TODO*/ }) {
+        Button(onClick = { coin.intValue = gamble(1000) }) {
             Text("Gamble 1000 coins")
         }
         Button(onClick = { context.finish() }) {

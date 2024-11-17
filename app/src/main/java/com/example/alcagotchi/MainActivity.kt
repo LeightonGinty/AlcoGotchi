@@ -60,6 +60,7 @@ import com.example.alcagotchi.ui.theme.AlcaGotchiTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        AlcoGotchi.getInstance().getState()
         super.onCreate(savedInstanceState)
         setContent {
             AlcaGotchiTheme {
