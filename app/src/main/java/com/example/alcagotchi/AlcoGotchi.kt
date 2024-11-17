@@ -76,7 +76,6 @@ class AlcoGotchi private constructor() {
             .post(body.toString().toRequestBody(jsonMediaType))
             .build()
 
-        client.newCall(request).enqueue(basicCallback)
         return withContext(Dispatchers.IO) {
             handleStateResponse(client.newCall(request).execute())
         }
@@ -103,7 +102,6 @@ class AlcoGotchi private constructor() {
             .post(body.toString().toRequestBody(jsonMediaType))
             .build()
 
-        client.newCall(request).enqueue(basicCallback)
         return withContext(Dispatchers.IO) {
             handleStateResponse(client.newCall(request).execute())
         }
@@ -113,7 +111,6 @@ class AlcoGotchi private constructor() {
             .url(buildUrl("mine"))
             .build()
 
-        client.newCall(request).enqueue(basicCallback)
         return withContext(Dispatchers.IO) {
             handleStateResponse(client.newCall(request).execute())
         }
