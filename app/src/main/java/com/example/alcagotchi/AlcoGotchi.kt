@@ -92,4 +92,18 @@ class AlcoGotchi private constructor() {
             handleStateResponse(client.newCall(request).execute())
         }
     }
+    suspend fun postBuy(choice: String) {
+        val body = JSONObject()
+        body.put("item", choice)
+
+        val request = Request.Builder()
+            .url(buildUrl("buy"))
+            .post(body.toString().toRequestBody(jsonMediaType))
+            .build()
+
+        client.newCall(request).enqueue(basicCallback)
+        return withContext(Dispatchers.IO) {
+            handleStateResponse(client.newCall(request).execute())
+        }
+    }
 }
