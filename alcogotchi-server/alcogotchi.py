@@ -12,6 +12,7 @@ def drive(base_speed):
     driving = True
     happiness = 9
     lane = 0
+    driving_time = 0
     # opposing_vehicle_y = 0
 
     range_speed = 30
@@ -34,7 +35,8 @@ def drive(base_speed):
     # new_thread = _thread.start_new_thread(play_music, [CHASE])
 
     while playing and driving:
-      
+      if driving_time > 100:
+        break
       
       # WAWA = "e3:3 r:1 d#:3 r:1 d:4 r:1 c#:8 "
 
@@ -89,9 +91,30 @@ def drive(base_speed):
         screen.rect(93,80,20,40,(0, 0, 0),1)
 
       screen.refresh()
+    else:
+      return True
     screen.text("GAME OVER", x=10, y=90, ext=1, color=255)
     driving = False
-    screen.rect(0,0,160,128,(0, 0, 0),1)
+    return False
+    
+def s():
+    #screen.rect(0,0,160,128,(0, 0, 0),1)
+    if not driving:
+      drunkness = alcogotchi.drunk
+      happiness = alcogotchi.happiness
+      health = alcogotchi.health
+      screen.loadPng('alcogotchi.png')
+
+      screen.text("Health", x=10, y=60, ext=1, color=255)
+      #screen.rect(10,100,150,10,(0, 0, 0),1)
+      screen.rect(10,70,int(health*1.2),10,(500-int(5*health), int(5*health), 555),1)
+      screen.text("Drunkness", x=10, y=80, ext=1, color=255)
+      #screen.rect(10,100,150,10,(0, 0, 0),1)
+      screen.rect(10,90,int(drunkness*1.2),10,(500-int(5*drunkness), int(5*drunkness), 555),1)
+      screen.text("Happiness", x=10, y=100, ext=1, color=255)
+      
+      #screen.rect(10,100,150,10,(0, 0, 0),1)
+      screen.rect(10,110,int(happiness*1.2),10,(500-int(5*happiness), int(5*happiness), 555),1)
 
 class Alcogotchi:
     def __init__(self, name):
@@ -109,13 +132,19 @@ class Alcogotchi:
     def double_or_nothing(self, data):
         bet = dict(data)["bet"]
         if self.alco_coin >= bet:
-            self.alco_coin += random.choice([-bet, bet])
+            if random.randin(0,1) == 0:
+              self.alco_coin += bet
+              self.happiness += 2
+            else:
+              self.alco_coin -= bet
+              self.happiness -= 2
             return self.get_alcogotchi()
+        s()
         raise Exception("You got no coin")
         
     def buy_item(self, data):
         item = dict(data)["item"]
-        if item in self.items:
+        if item in self.items and self.alco_coin > 3:
             self.alco_coin -= 3
             self.items[item] += 1
             return self.get_alcogotchi()
@@ -128,14 +157,23 @@ class Alcogotchi:
             self.happiness += BEVERAGES[drink_choice]
             self.last_drunkentime = time.time()
             self.items[drink_choice] -= 1
+            self.health -= 1
+            if self.health == 0:
+              del self
         self.drunk = min(100, self.drunk)
         self.happiness = min(100, self.happiness)
+        s()
         return self.get_alcogotchi()
 
     def drive(self):
-        drive(int(self.drunk))
+        crash = drive(int(self.drunk))
+        if crash:
+          self.health -= 10
+          if self.health == 0:
+            del self
         self.happiness += 10
         self.happiness = min(100, self.happiness)
+        s()
         return self.get_alcogotchi()
         
     def mine(self):
@@ -144,6 +182,7 @@ class Alcogotchi:
             self.alco_coin += 2
             return self.get_alcogotchi()
         self.items["beer"] += 1
+        s()
         raise Exception("You're too sad to mine coin. Here have a beer :)")
     
 alcogotchi = Alcogotchi("Brian")
@@ -202,21 +241,6 @@ class Server:
 
             finally:
                 self.connection.close()
-def s():
-  while True:
-    drunkness = alcogotchi.drunk
-    happiness = alcogotchi.happiness
-    if not driving:
-      screen.loadPng('alcogotchi.png')
-
-      
-      screen.text("Drunkness", x=10, y=90, ext=1, color=255)
-      screen.rect(10,100,150,10,(0, 0, 0),1)
-      screen.rect(10,100,drunkness*1.5,10,(500-5*drunkness, 5*drunkness, 555),1)
-      screen.text("Happiness", x=10, y=110, ext=1, color=255)
-      
-      screen.rect(10,100,150,10,(0, 0, 0),1)
-      screen.rect(10,120,happiness*1.5,10,(500-5*happiness, 5*happiness, 555),1)
       
 ap = network.WLAN(network.AP_IF)
 ap.active(True)
@@ -224,12 +248,13 @@ ap.config(essid="Cool Server", password="password123")
 print("Connection avalible on {0}".format(ap.ifconfig()))
 
 server = Server()
-    
+
 server.add_route("/", alcogotchi.get_alcogotchi)
 server.add_route("/drink", alcogotchi.drink)
 server.add_route("/gamble", alcogotchi.double_or_nothing)
 server.add_route("/buy", alcogotchi.buy_item)
 server.add_route("/drive", alcogotchi.drive)
 server.add_route("/mine", alcogotchi.mine)
-#_thread.start_new_thread(s, ())
+# _thread.start_new_thread(s, ())
+s()
 server.start()
