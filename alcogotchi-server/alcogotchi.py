@@ -175,7 +175,7 @@ class Alcogotchi:
     def drink(self, data):
         global terminated
         drink_choice = data["drink"]
-        if self.last_drunkentime + 0 < time.time() and self.items[drink_choice] > 0:
+        if self.last_drunkentime + 3 < time.time() and self.items[drink_choice] > 0:
             self.drunk += BEVERAGES[drink_choice]
             self.happiness += BEVERAGES[drink_choice]
             self.last_drunkentime = time.time()
