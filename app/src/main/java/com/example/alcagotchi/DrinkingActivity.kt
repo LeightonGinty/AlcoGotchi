@@ -17,9 +17,10 @@ package com.example.alcagotchi
 
 //import kotlinx.coroutines.flow.internal.NoOpContinuation.context
 //import kotlin.coroutines.jvm.internal.CompletedContinuation.context
+import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -33,6 +34,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,14 +46,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.alcagotchi.ui.theme.AlcaGotchiTheme
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.net.HttpURLConnection
-import java.net.URL
+import kotlinx.coroutines.runBlocking
+
 //import java.net.HttpURLConnection
 //import java.net.URL
 //
@@ -110,13 +110,39 @@ fun DrinkingGreetingText(message: String, from: String, modifier: Modifier = Mod
         )
     }
 }
+class DrinkingViewModel : ViewModel() {
+    val drunk = mutableIntStateOf(0)
+
+    fun drink(drink_choice: String, context: Activity) {
+        val alcoGotchi = AlcoGotchi.getInstance()
+        viewModelScope.launch {
+            runBlocking {
+                try {
+                    alcoGotchi.postDrink(drink_choice)
+                } catch (e: Exception) {
+                    val alertDialog = AlertDialog.Builder(context)
+
+                    alertDialog.apply {
+                        setTitle("no")
+                        setMessage("ur broke")
+                    }.create().show()
+                }
+
+                drunk.intValue = alcoGotchi.drunk
+            }
+        }
+
+    }
+}
 
 @Composable
-fun DrinkingOptions(modifier: Modifier = Modifier) {
+fun DrinkingOptions(viewModel: DrinkingViewModel, modifier: Modifier = Modifier) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        val context = LocalContext.current as Activity
+
         Text(
             text = "What would you like to drink?",
             fontSize = 36.sp,
@@ -126,7 +152,7 @@ fun DrinkingOptions(modifier: Modifier = Modifier) {
                 .padding(end = 16.dp)
         )
         Button(onClick = {
-            PostHttpRequest("http://192.168.4.1/drink")
+            viewModel.drink("beer", context)
         })
         {
             Text(
@@ -134,7 +160,7 @@ fun DrinkingOptions(modifier: Modifier = Modifier) {
             )
         }
         Button(onClick = {
-            PostHttpRequest("http://192.168.4.1/drink")
+            viewModel.drink("whisky", context)
         })
         {
             Text(
@@ -142,7 +168,7 @@ fun DrinkingOptions(modifier: Modifier = Modifier) {
             )
         }
         Button(onClick = {
-            PostHttpRequest("http://192.168.4.1/drink")
+            viewModel.drink("wine", context)
         })
         {
             Text(
@@ -150,7 +176,7 @@ fun DrinkingOptions(modifier: Modifier = Modifier) {
             )
         }
         Button(onClick = {
-            PostHttpRequest("http://192.168.4.1/drink")
+            viewModel.drink("lemonade", context)
         })
         {
             Text(
@@ -181,7 +207,7 @@ fun DrinkingGreeting(message: String, modifier: Modifier = Modifier) {
         }) {
             Text("Go back")
         }
-        DrinkingOptions()
+        DrinkingOptions(viewModel = DrinkingViewModel())
     }
 }
 

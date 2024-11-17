@@ -118,6 +118,12 @@ fun GreetingText(message: String, from: String, modifier: Modifier = Modifier) {
         }) {
             Text("Drinking")
         }
+        Button(onClick = {
+            val intent = Intent(context, ShopActivity::class.java)
+            context.startActivity(intent)
+        }) {
+            Text("Go to shop")
+        }
     }
 }
 @Composable

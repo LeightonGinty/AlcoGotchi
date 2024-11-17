@@ -19,6 +19,7 @@ class AlcoGotchi private constructor() {
 
     var baseUrl = "http://192.168.4.1:80"
     var coins = 100
+    var drunk = 0
 
     companion object {
         @Volatile private var instance: AlcoGotchi? = null
@@ -51,6 +52,7 @@ class AlcoGotchi private constructor() {
         val json = JSONObject(response.body!!.string())
 
         coins = json.getJSONObject("data").getInt("alco_coin")
+        drunk = json.getJSONObject("data").getInt("drunk")
     }
 
     fun getState() {
@@ -67,6 +69,20 @@ class AlcoGotchi private constructor() {
 
         val request = Request.Builder()
             .url(buildUrl("gamble"))
+            .post(body.toString().toRequestBody(jsonMediaType))
+            .build()
+
+        client.newCall(request).enqueue(basicCallback)
+        return withContext(Dispatchers.IO) {
+            handleStateResponse(client.newCall(request).execute())
+        }
+    }
+    suspend fun postDrink(drink: String) {
+        val body = JSONObject()
+        body.put("drink", drink)
+
+        val request = Request.Builder()
+            .url(buildUrl("drink"))
             .post(body.toString().toRequestBody(jsonMediaType))
             .build()
 
