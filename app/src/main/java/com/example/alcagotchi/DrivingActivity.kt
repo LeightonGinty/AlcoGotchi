@@ -117,7 +117,7 @@ fun DrivingOptions(viewModel: DrivingViewModel, modifier: Modifier = Modifier) {
             Text("Yes please")
         }
         Button(onClick = { context.finish() }) {
-            Text("No I'm a wimp")
+            Text("No, I believe that I am under the influence of alcohol that would inhibit my ability to drive safely on the road.")
         }
     }
 }

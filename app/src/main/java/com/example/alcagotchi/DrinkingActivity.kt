@@ -201,6 +201,9 @@ fun DrinkingOptions(viewModel: DrinkingViewModel, modifier: Modifier = Modifier)
                 text = "Drink Lemonade"
             )
         }
+        Button(onClick = { context.finish() }) {
+            Text("Go back")
+        }
     }
 }
 
@@ -219,9 +222,6 @@ fun DrinkingGreeting(message: String, modifier: Modifier = Modifier) {
 
 
         )
-        Button(onClick = { context.finish() }) {
-            Text("Go back")
-        }
         DrinkingOptions(viewModel = DrinkingViewModel())
     }
 }

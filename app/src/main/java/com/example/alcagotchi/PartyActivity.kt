@@ -91,7 +91,7 @@ class PartyViewModel : ViewModel() {
     val coin = mutableIntStateOf(0)
     var amountInput = mutableIntStateOf(0)
 
-    fun name(context: Context) {
+    fun name(chosen_name: String, context: Context) {
         val alcoGotchi = AlcoGotchi.getInstance()
         viewModelScope.launch {
             runBlocking {
@@ -134,9 +134,9 @@ fun PartyOptions(viewModel: PartyViewModel, modifier: Modifier = Modifier) {
                 .padding(end = 16.dp)
         )
         EditNumberField(Modifier)
-//        Button(onClick = { viewModel.name(amountInput.text, context) }) {
-//            Text("Enter name")
-//        }
+        Button(onClick = { viewModel.name(amountInput.text, context) }) {
+            Text("Enter name")
+        }
 
     }
 }

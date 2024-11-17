@@ -127,8 +127,8 @@ fun GreetingText(viewModel: MainViewModel, message: String, from: String, modifi
         if (!connecting) {
             Text(
                 text = message,
-                fontSize = 100.sp,
-                lineHeight = 116.sp,
+                fontSize = 50.sp,
+                lineHeight = 60.sp,
                 textAlign = TextAlign.Center,
                 color = Color(0xFF00FF00),
                 modifier = Modifier.padding(top = 16.dp)
@@ -136,6 +136,7 @@ fun GreetingText(viewModel: MainViewModel, message: String, from: String, modifi
             Text(
                 text = from,
                 fontSize = 36.sp,
+                lineHeight = 40.sp,
                 color = Color(0xFF00FF00),
                 modifier = Modifier
                     .padding(top = 16.dp)
