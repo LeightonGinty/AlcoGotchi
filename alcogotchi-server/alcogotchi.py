@@ -8,6 +8,8 @@ from random import randint
 BEVERAGES = {"beer": 2.5, "wine": 3, "whisky": 2, "lemonade": 0}
 driving = False
 terminated = False
+def play_music_once(melody_name):
+    buzzer.melody(melody_name)
 def drive(base_speed):
     screen.rect(0,0,160,128,(0, 0, 0),1)
     driving = True
@@ -20,6 +22,8 @@ def drive(base_speed):
 
     opposing_vehicle_ys = [0,0,0]
     number_of_vehicles = 10
+    base_speed *= 2.5
+    base_speed = int(base_speed)
     opposing_vehicle_speeds = [randint(base_speed,base_speed+range_speed) for i in range(number_of_vehicles)]
     opposing_vehicle_lanes = [randint(0,3) for i in range(number_of_vehicles)]
     playing = True
@@ -34,7 +38,6 @@ def drive(base_speed):
 
 
     new_thread = _thread.start_new_thread(play_music, [CHASE])
-
     while playing and driving:
       driving_time += 1
       if driving_time > 100:
@@ -136,14 +139,21 @@ class Alcogotchi:
         return self.__dict__
 
     def double_or_nothing(self, data):
+        BA_DING = "b5:1 e6:3 "
+        ERROR = "a3:2 r a3:2 "
+
+
         bet = dict(data)["bet"]
         if self.alco_coin >= bet:
             if random.randint(0,1) == 0:
               self.alco_coin += bet
               self.happiness += 2
+              new_thread = _thread.start_new_thread(play_music_once, [BA_DING])
             else:
               self.alco_coin -= bet
               self.happiness -= 2
+              new_thread = _thread.start_new_thread(play_music_once, [ERROR])
+
             s()
             return self.get_alcogotchi()
         s()
@@ -259,7 +269,7 @@ class Server:
       
 ap = network.WLAN(network.AP_IF)
 ap.active(True)
-ap.config(essid="Cool Server", password="password123")
+ap.config(essid="Cool Server1", password="password123")
 print("Connection avalible on {0}".format(ap.ifconfig()))
 
 server = Server()
@@ -273,3 +283,6 @@ server.add_route("/mine", alcogotchi.mine)
 # _thread.start_new_thread(s, ())
 s()
 server.start()
+_thread.exit()
+FUNERAL = "c3:4 c:3 c:1 c:4 d#:3 d:1 d:3 c:1 c:3 b2:1 c3:4 "
+buzzer.melody(FUNERAL)
