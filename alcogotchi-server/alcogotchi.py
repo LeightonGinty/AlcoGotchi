@@ -132,7 +132,7 @@ class Alcogotchi:
     def double_or_nothing(self, data):
         bet = dict(data)["bet"]
         if self.alco_coin >= bet:
-            if random.randin(0,1) == 0:
+            if random.randint(0,1) == 0:
               self.alco_coin += bet
               self.happiness += 2
             else:
