@@ -16,6 +16,8 @@
 package com.example.alcagotchi
 
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -30,6 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -47,12 +50,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.alcagotchi.ui.theme.AlcaGotchiTheme
 import com.example.alcagotchi.ui.theme.AlcaGotchiTheme
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class CasinoActivity : ComponentActivity() {
-    private val coin = MutableLiveData<Int>()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -70,16 +76,34 @@ class CasinoActivity : ComponentActivity() {
     }
 }
 
-fun gamble(amount: Int): Int {
-    val alcoGotchi = AlcoGotchi.getInstance()
-    alcoGotchi.postGamble(amount)
+class CasinoViewModel : ViewModel() {
+    val coin = mutableIntStateOf(0)
 
-    return alcoGotchi.coins
+    fun gamble(amount: Int, context: Context) {
+        val alcoGotchi = AlcoGotchi.getInstance()
+        viewModelScope.launch {
+            runBlocking {
+                try {
+                    alcoGotchi.postGamble(amount)
+                } catch (e: Exception) {
+                    val alertDialog = AlertDialog.Builder(context)
+
+                    alertDialog.apply {
+                        setTitle("no")
+                        setMessage("ur broke")
+                    }.create().show()
+                }
+
+                coin.intValue = alcoGotchi.coins
+            }
+        }
+    }
 }
 
+
 @Composable
-fun CasinoOptions(modifier: Modifier = Modifier) {
-    val coin = remember { mutableIntStateOf(0) }
+fun CasinoOptions(viewModel: CasinoViewModel, modifier: Modifier = Modifier) {
+    val coin by viewModel.coin
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -96,20 +120,20 @@ fun CasinoOptions(modifier: Modifier = Modifier) {
                 .padding(end = 16.dp)
         )
         Text(
-            text = coin.value.toString(),
+            text = coin.toString(),
             fontSize = 36.sp,
             color = Color(0xFF00FF00),
             modifier = Modifier
                 .padding(top = 16.dp)
                 .padding(end = 16.dp)
         )
-        Button(onClick = { coin.intValue = gamble(10) }) {
+        Button(onClick = { viewModel.gamble(10, context) }) {
             Text("Gamble 10 coins")
         }
-        Button(onClick = { coin.intValue = gamble(100) }) {
+        Button(onClick = { viewModel.gamble(100, context) }) {
             Text("Gamble 100 coins")
         }
-        Button(onClick = { coin.intValue = gamble(1000) }) {
+        Button(onClick = { viewModel.gamble(1000, context) }) {
             Text("Gamble 1000 coins")
         }
         Button(onClick = { context.finish() }) {
@@ -131,7 +155,7 @@ fun CasinoGreeting(message: String, modifier: Modifier = Modifier) {
 
 
         )
-        CasinoOptions()
+        CasinoOptions(viewModel = CasinoViewModel())
     }
 }
 
@@ -144,3 +168,4 @@ private fun CasinoPreview() {
         )
     }
 }
+

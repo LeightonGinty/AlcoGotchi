@@ -1,5 +1,7 @@
 package com.example.alcagotchi
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
@@ -59,7 +61,7 @@ class AlcoGotchi private constructor() {
         client.newCall(request).enqueue(basicCallback)
     }
 
-    fun postGamble(amount: Int) {
+    suspend fun postGamble(amount: Int) {
         val body = JSONObject()
         body.put("bet", amount)
 
@@ -68,6 +70,8 @@ class AlcoGotchi private constructor() {
             .post(body.toString().toRequestBody(jsonMediaType))
             .build()
 
-        client.newCall(request).enqueue(basicCallback)
+        return withContext(Dispatchers.IO) {
+            handleStateResponse(client.newCall(request).execute())
+        }
     }
 }
