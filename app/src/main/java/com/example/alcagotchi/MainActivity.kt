@@ -167,6 +167,12 @@ fun GreetingText(viewModel: MainViewModel, message: String, from: String, modifi
             }) {
                 Text("Start Driving")
             }
+            Button(onClick = {
+                val intent = Intent(context, CoalMineActivity::class.java)
+                context.startActivity(intent)
+            }) {
+                Text("Earn money")
+            }
         } else {
             Text(
                 text = "connecting... plz wait",
