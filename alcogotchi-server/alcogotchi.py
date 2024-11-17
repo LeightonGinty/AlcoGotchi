@@ -11,6 +11,7 @@ class Alcogotchi:
         self.drunk = 0
         self.health = 100
         self.alco_coin = 100
+        self.items = {}
 
     def get_alcogotchi(self):
         return self.__dict__
@@ -22,7 +23,13 @@ class Alcogotchi:
             return self.get_alcogotchi()
         else:
             raise Exception("You got no coin")
-        
+    def buy_item(self, data):
+      item = dict(data)["item"]
+      self.alco_coin -= 3
+      if item in self.items:
+        self.items[item] += 1
+      else:
+        self.items[item] = 1
     def drink(self):
         if self.last_drunkentime + 60 < time.time():
             self.last_drunkentime = time.time()
@@ -89,7 +96,7 @@ class Server:
 
 ap = network.WLAN(network.AP_IF)
 ap.active(True)
-ap.config(essid="Cool Server", password="password123")
+ap.config(essid="Cool Server1", password="password123")
 print("Connection avalible on {0}".format(ap.ifconfig()))
     
 
@@ -99,5 +106,5 @@ server.add_route("/text", lambda: "Hello World!")
 server.add_route("/", alcogotchi.get_alcogotchi)
 server.add_route("/drink", alcogotchi.drink)
 server.add_route("/gamble", alcogotchi.double_or_nothing)
-
+server.add_route("/buy", alcogotchi.buy_item)
 server.start()
