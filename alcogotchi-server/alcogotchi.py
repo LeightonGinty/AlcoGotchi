@@ -7,6 +7,7 @@ from random import randint
 
 BEVERAGES = {"beer": 2.5, "wine": 3, "whisky": 2, "lemonade": 0}
 driving = False
+terminated = False
 def drive(base_speed):
     screen.rect(0,0,160,128,(0, 0, 0),1)
     driving = True
@@ -26,13 +27,13 @@ def drive(base_speed):
     for i in range(len(opposing_vehicle_ys)):
       screen.rect(13+opposing_vehicle_lanes[i]*40, opposing_vehicle_ys[i],20,40,(500, 500, 555),1)
     def play_music(CHASE):
-      while True:
+      while driving:
         buzzer.melody(CHASE)
     CHASE = "a4:1 b c5 b4 a:2 r a:1 b c5 b4 a:2 r a:2 e5 d# e f e d# e b4:1 c5 d c b4:2 r b:1 c5 d c b4:2 r b:2 e5 d# e f e d# e "
       
 
 
-    # new_thread = _thread.start_new_thread(play_music, [CHASE])
+    new_thread = _thread.start_new_thread(play_music, [CHASE])
 
     while playing and driving:
       driving_time += 1
@@ -42,7 +43,7 @@ def drive(base_speed):
       # WAWA = "e3:3 r:1 d#:3 r:1 d:4 r:1 c#:8 "
 
       startup_time += 1
-      if startup_time >= 3:
+      if startup_time >= 10:
         for i in range(len(opposing_vehicle_ys)):
           opposing_vehicle_ys[i]+=opposing_vehicle_speeds[i]
           if  80 <= (opposing_vehicle_ys[i]+40) <= 120  and opposing_vehicle_lanes[i] == lane:
@@ -94,6 +95,7 @@ def drive(base_speed):
       screen.refresh()
     else:
       screen.rect(0,0,160,128,(0, 0, 0),1)
+      driving = False
       return True
     screen.text("GAME OVER", x=10, y=90, ext=1, color=255)
     driving = False
@@ -107,7 +109,8 @@ def s():
       happiness = alcogotchi.happiness
       health = alcogotchi.health
       screen.loadPng('alcogotchi.png')
-
+      
+      screen.text("Coin: {0}".format(alcogotchi.alco_coin), x=10, y=50, ext=1, color=255)
       screen.text("Health", x=10, y=60, ext=1, color=255)
       #screen.rect(10,100,150,10,(0, 0, 0),1)
       screen.rect(10,70,int(health*1.2),10,(255-int(2.55*health), int(2.55*health), 0),1)
@@ -141,6 +144,7 @@ class Alcogotchi:
             else:
               self.alco_coin -= bet
               self.happiness -= 2
+            s()
             return self.get_alcogotchi()
         s()
         raise Exception("You got no coin")
@@ -150,10 +154,12 @@ class Alcogotchi:
         if item in self.items and self.alco_coin > 3:
             self.alco_coin -= 3
             self.items[item] += 1
+            s()
             return self.get_alcogotchi()
         raise Exception("Item doesn't exist")
         
     def drink(self, data):
+        global terminated
         drink_choice = data["drink"]
         if self.last_drunkentime + 8 < time.time() and self.items[drink_choice] > 0:
             self.drunk += BEVERAGES[drink_choice]
@@ -161,21 +167,25 @@ class Alcogotchi:
             self.last_drunkentime = time.time()
             self.items[drink_choice] -= 1
             self.health -= 1
-            if self.health == 0:
-              del self
+            if self.health <1:
+              terminated = True
         self.drunk = min(100, self.drunk)
         self.happiness = min(100, self.happiness)
         s()
         return self.get_alcogotchi()
 
     def drive(self):
+        global terminated
         crash = drive(int(self.drunk))
         if crash:
-          self.health -= 10
+          self.health -= 20
+          self.happiness -= 10
           if self.health == 0:
-            del self
-        self.happiness += 10
-        self.happiness = min(100, self.happiness)
+            terminated = True
+          self.happiness = max(self.happiness, 0)
+        else:
+          self.happiness += 10
+          self.happiness = min(100, self.happiness)
         s()
         return self.get_alcogotchi()
         
@@ -183,10 +193,11 @@ class Alcogotchi:
         if self.happiness > 0:
             self.happiness -= 1
             self.alco_coin += 2
+            s()
             return self.get_alcogotchi()
         self.items["beer"] += 1
         s()
-        raise Exception("You're too sad to mine coin. Here have a beer :)")
+        raise Exception("You're too sad to mine coal. Here have a beer :)")
     
 alcogotchi = Alcogotchi("Brian")
 
@@ -220,8 +231,9 @@ class Server:
             )
 
     def start(self):
+        global terminated
         print("Server running on port {0}...".format(self.port))
-        while True:
+        while not terminated:
             self.connection, client_address = self._sock.accept()
             try:
                 request = self.connection.recv(1024).decode().split("\r\n")
