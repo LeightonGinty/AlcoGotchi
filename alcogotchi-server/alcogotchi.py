@@ -4,6 +4,8 @@ import _thread
 import time
 import random
 
+BEVERAGES = {"beer": 2.5, "wine": 3, "whisky": 2, "lemonade": 0}
+
 class Alcogotchi:
     def __init__(self, name):
         self.name = name
@@ -11,29 +13,31 @@ class Alcogotchi:
         self.drunk = 0
         self.health = 100
         self.alco_coin = 100
-        self.items = {}
-        self.beverages = {"beer": 2.5, "wine": 3, "whisky": 2, "lemonade": 0}
+        self.items = {"food": 0, "beer": 0}
 
     def get_alcogotchi(self):
+        self.last_drunkentime = time.time()
         return self.__dict__
 
     def double_or_nothing(self, data):
-        if self.alco_coin > 0:
-            bet = dict(data)["bet"]
+        self.last_drunkentime = time.time()
+        bet = dict(data)["bet"]
+        if self.alco_coin > bet:
             self.alco_coin += random.choice([-bet, bet])
             return self.get_alcogotchi()
-        else:
-            raise Exception("You got no coin")
+        raise Exception("You got no coin")
+        
     def buy_item(self, data):
-      item = dict(data)["item"]
-      self.alco_coin -= 3
-      if item in self.items:
-        self.items[item] += 1
-      else:
-        self.items[item] = 1
+        self.last_drunkentime = time.time()
+        item = dict(data)["item"]
+        if item in self.items:
+            self.alco_coin -= 3
+            self.items[item] += 1
+        raise Exception("Item doesn't exist")
+        
     def drink(self, data):
         drink_choice = data["drink"]
-        self.drunk += beverages[drink_choice]
+        self.drunk += BEVERAGES[drink_choice]
         if self.last_drunkentime + 60 < time.time():
             self.last_drunkentime = time.time()
         self.drunk += 10
@@ -99,12 +103,11 @@ class Server:
 
 ap = network.WLAN(network.AP_IF)
 ap.active(True)
-ap.config(essid="Cool Server1", password="password123")
+ap.config(essid="Cool Server", password="password123")
 print("Connection avalible on {0}".format(ap.ifconfig()))
     
 
 server = Server()
-server.add_route("/text", lambda: "Hello World!")
     
 server.add_route("/", alcogotchi.get_alcogotchi)
 server.add_route("/drink", alcogotchi.drink)
