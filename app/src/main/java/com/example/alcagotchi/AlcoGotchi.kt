@@ -115,12 +115,22 @@ class AlcoGotchi private constructor() {
             handleStateResponse(client.newCall(request).execute())
         }
     }
-    suspend fun postDrive() {
+    suspend fun getDrive() {
         val body = JSONObject()
-//        body.put("drive", drink)
 
         val request = Request.Builder()
             .url(buildUrl("drive"))
+            .get()
+            .build()
+
+        return withContext(Dispatchers.IO) {
+            handleStateResponse(client.newCall(request).execute())
+        }
+    }
+    suspend fun getClub() {
+        val body = JSONObject()
+        val request = Request.Builder()
+            .url(buildUrl("club"))
             .get()
             .build()
 

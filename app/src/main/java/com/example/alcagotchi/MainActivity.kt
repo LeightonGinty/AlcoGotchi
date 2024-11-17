@@ -178,7 +178,7 @@ fun GreetingText(viewModel: MainViewModel, message: String, from: String, modifi
                 val intent = Intent(context, PartyActivity::class.java)
                 context.startActivity(intent)
             }) {
-                Text("Start a Party")
+                Text("Join the Party")
             }
         } else {
             Text(

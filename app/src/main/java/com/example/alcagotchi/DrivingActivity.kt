@@ -49,7 +49,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.alcagotchi.ui.theme.AlcaGotchiTheme
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class DrivingActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,7 +76,7 @@ class DrivingViewModel : ViewModel() {
         viewModelScope.launch {
             kotlin.run {
                 try {
-                    alcoGotchi.postDrive()
+                    alcoGotchi.getDrive()
                 } catch (e: Exception) {
                     val alertDialog = AlertDialog.Builder(context)
 

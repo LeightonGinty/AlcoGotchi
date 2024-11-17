@@ -20,7 +20,6 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
-import android.provider.Telephony.Mms.Part
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -46,13 +45,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.alcagotchi.ui.theme.AlcaGotchiTheme
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -66,7 +63,7 @@ class PartyActivity() : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    PartyGreeting(
+                    PartyGreeting(viewModel = PartyViewModel()
                     )
                 }
             }
@@ -91,12 +88,12 @@ class PartyViewModel : ViewModel() {
     val coin = mutableIntStateOf(0)
     var amountInput = mutableIntStateOf(0)
 
-    fun name(chosen_name: String, context: Context) {
+    fun party(context: Context) {
         val alcoGotchi = AlcoGotchi.getInstance()
         viewModelScope.launch {
-            runBlocking {
+            kotlin.run {
                 try {
-                    alcoGotchi.postDrive()
+                    alcoGotchi.getClub()
                 } catch (e: Exception) {
                     val alertDialog = AlertDialog.Builder(context)
 
@@ -126,28 +123,31 @@ fun PartyOptions(viewModel: PartyViewModel, modifier: Modifier = Modifier) {
         val context = LocalContext.current as Activity
 
         Text(
-            text = "What is your name?",
+            text = "Welcome to the club",
             fontSize = 36.sp,
             color = Color(0xFF00FF00),
             modifier = Modifier
                 .padding(top = 16.dp)
                 .padding(end = 16.dp)
         )
-        EditNumberField(Modifier)
-        Button(onClick = { viewModel.name(amountInput.text, context) }) {
-            Text("Enter name")
+        Button(onClick = { context.finish() }) {
+            Text("Leave the club")
         }
 
     }
 }
 
 @Composable
-fun PartyGreeting(modifier: Modifier = Modifier) {
+fun PartyGreeting(modifier: Modifier = Modifier, viewModel: PartyViewModel) {
+    val context = LocalContext.current as Activity
+
+    viewModel.party(context)
     // Create a box to overlap image and texts
 
     Box(modifier) {
+
         Image(
-            painter = painterResource(id = R.drawable.driving),
+            painter = painterResource(id = R.drawable.theclub),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             alpha = 1F,
