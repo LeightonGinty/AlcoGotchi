@@ -125,7 +125,7 @@ class DrinkingViewModel : ViewModel() {
 
                     alertDialog.apply {
                         setTitle("no")
-                        setMessage("ur broke")
+                        setMessage(e.toString())
                     }.create().show()
                 }
 
