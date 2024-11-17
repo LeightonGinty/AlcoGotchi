@@ -75,7 +75,7 @@ class DrivingViewModel : ViewModel() {
     fun drive(context: Context) {
         val alcoGotchi = AlcoGotchi.getInstance()
         viewModelScope.launch {
-            runBlocking {
+            kotlin.run {
                 try {
                     alcoGotchi.postDrive()
                 } catch (e: Exception) {
@@ -117,7 +117,10 @@ fun DrivingOptions(viewModel: DrivingViewModel, modifier: Modifier = Modifier) {
             Text("Yes please")
         }
         Button(onClick = { context.finish() }) {
-            Text("No, I believe that I am under the influence of alcohol that would inhibit my ability to drive safely on the road.")
+            Text("\n\n\n\n\n\nNo, I believe that I am under the influence of alcohol that would inhibit my ability to drive safely on the road. Despite my best efforts to remain composed and aware of my surroundings, I can feel that my coordination and reflexes are not functioning at their usual level. The clarity I typically rely on is clouded, and I can sense that my judgment is becoming impaired. The familiar confidence I usually have behind the wheel is replaced by a growing uncertainty and hesitation. Simple tasks, like maintaining my lane or responding to changes in traffic, are becoming more challenging, and I am aware that my reaction time has slowed considerably. Even though I may still feel like I am in control, deep down I know that the risk of making a mistake—something as minor as misjudging the distance to the car ahead, or as serious as not noticing a pedestrian crossing—could have dire consequences. The last thing I want is to put anyone’s life in danger, including my own, and the best choice in this moment is to acknowledge that I am not in a condition to drive safely, no matter how capable I may think I am. It is better to wait, find another way to get home, or call for help than to risk the kind of harm that could occur from driving while impaired.\n" +
+                    "\n" +
+                    "\n" +
+                    "\n\n\n")
         }
     }
 }
