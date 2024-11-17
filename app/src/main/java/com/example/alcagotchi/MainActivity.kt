@@ -155,6 +155,12 @@ fun GreetingText(viewModel: MainViewModel, message: String, from: String, modifi
             }) {
                 Text("Drinking")
             }
+            Button(onClick = {
+                val intent = Intent(context, ShopActivity::class.java)
+                context.startActivity(intent)
+            }) {
+                Text("Go to shop")
+            }
         } else {
             Text(
                 text = "connecting... plz wait",
@@ -166,12 +172,6 @@ fun GreetingText(viewModel: MainViewModel, message: String, from: String, modifi
                     .align(alignment = Alignment.End)
 
             )
-        }
-        Button(onClick = {
-            val intent = Intent(context, ShopActivity::class.java)
-            context.startActivity(intent)
-        }) {
-            Text("Go to shop")
         }
     }
 }
