@@ -35,6 +35,7 @@ def drive(base_speed):
     # new_thread = _thread.start_new_thread(play_music, [CHASE])
 
     while playing and driving:
+      driving_time += 1
       if driving_time > 100:
         break
       
@@ -92,9 +93,11 @@ def drive(base_speed):
 
       screen.refresh()
     else:
+      screen.rect(0,0,160,128,(0, 0, 0),1)
       return True
     screen.text("GAME OVER", x=10, y=90, ext=1, color=255)
     driving = False
+    screen.rect(0,0,160,128,(0, 0, 0),1)
     return False
     
 def s():
@@ -107,21 +110,21 @@ def s():
 
       screen.text("Health", x=10, y=60, ext=1, color=255)
       #screen.rect(10,100,150,10,(0, 0, 0),1)
-      screen.rect(10,70,int(health*1.2),10,(500-int(5*health), int(5*health), 555),1)
+      screen.rect(10,70,int(health*1.2),10,(255-int(2.55*health), int(2.55*health), 0),1)
       screen.text("Drunkness", x=10, y=80, ext=1, color=255)
       #screen.rect(10,100,150,10,(0, 0, 0),1)
-      screen.rect(10,90,int(drunkness*1.2),10,(500-int(5*drunkness), int(5*drunkness), 555),1)
+      screen.rect(10,90,int(drunkness*1.2),10,(255-int(2.55*drunkness), int(2.55*drunkness), 0),1)
       screen.text("Happiness", x=10, y=100, ext=1, color=255)
       
       #screen.rect(10,100,150,10,(0, 0, 0),1)
-      screen.rect(10,110,int(happiness*1.2),10,(500-int(5*happiness), int(5*happiness), 555),1)
+      screen.rect(10,110,int(happiness*1.2),10,(255-int(2.55*happiness), int(2.55*happiness), 0),1)
 
 class Alcogotchi:
     def __init__(self, name):
         self.name = name
         self.last_drunkentime = time.time()
         self.drunk = 0
-        self.happiness = 10
+        self.happiness = 50
         self.health = 100
         self.alco_coin = 100
         self.items = {"beer": 0, "wine": 0, "whisky": 0, "lemonade": 0}
