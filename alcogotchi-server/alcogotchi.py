@@ -12,6 +12,7 @@ class Alcogotchi:
         self.health = 100
         self.alco_coin = 100
         self.items = {}
+        self.beverages = {"beer": 2.5, "wine": 3, "whisky": 2, "lemonade": 0}
 
     def get_alcogotchi(self):
         return self.__dict__
@@ -30,7 +31,9 @@ class Alcogotchi:
         self.items[item] += 1
       else:
         self.items[item] = 1
-    def drink(self):
+    def drink(self, data):
+        drink_choice = data["drink"]
+        self.drunk += beverages[drink_choice]
         if self.last_drunkentime + 60 < time.time():
             self.last_drunkentime = time.time()
         self.drunk += 10
