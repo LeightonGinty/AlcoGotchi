@@ -172,7 +172,7 @@ class Alcogotchi:
     def drink(self, data):
         global terminated
         drink_choice = data["drink"]
-        if self.last_drunkentime + 8 < time.time() and self.items[drink_choice] > 0:
+        if self.last_drunkentime + 0 < time.time() and self.items[drink_choice] > 0:
             self.drunk += BEVERAGES[drink_choice]
             self.happiness += BEVERAGES[drink_choice]
             self.last_drunkentime = time.time()
@@ -270,9 +270,13 @@ class Server:
       
 ap = network.WLAN(network.AP_IF)
 ap.active(True)
-ap.config(essid="Cool Server1", password="password123")
+ap.config(essid="Your mum", password="password123")
 print("Connection avalible on {0}".format(ap.ifconfig()))
+CLUB =  "c2:2 c d# c:1 f:2 c:1 f:2 f# g c c g c:1 f#:2 c:1 f#:2 f d# "
 
+def the_club():
+  buzzer.melody(CLUB)
+  
 server = Server()
 
 server.add_route("/", alcogotchi.get_alcogotchi)
@@ -281,6 +285,7 @@ server.add_route("/gamble", alcogotchi.double_or_nothing)
 server.add_route("/buy", alcogotchi.buy_item)
 server.add_route("/drive", alcogotchi.drive)
 server.add_route("/mine", alcogotchi.mine)
+server.add_route("/club", the_club)
 # _thread.start_new_thread(s, ())
 s()
 server.start()
