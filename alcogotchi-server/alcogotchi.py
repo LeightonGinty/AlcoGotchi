@@ -125,6 +125,9 @@ def s():
       
       #screen.rect(10,100,150,10,(0, 0, 0),1)
       screen.rect(10,110,int(happiness*1.2),10,(255-int(2.55*happiness), int(2.55*happiness), 0),1)
+      
+def minetime():
+  buzzer.melody(BA_DING)
 
 class Alcogotchi:
     def __init__(self, name):
@@ -202,6 +205,7 @@ class Alcogotchi:
         
     def mine(self):
         if self.happiness > 0:
+            minetime()
             self.happiness -= 1
             self.alco_coin += 2
             s()
