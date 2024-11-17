@@ -189,7 +189,7 @@ fun DrinkingOptions(viewModel: DrinkingViewModel, modifier: Modifier = Modifier)
 @Composable
 fun DrinkingGreeting(message: String, modifier: Modifier = Modifier) {
     // Create a box to overlap image and texts
-    val context = LocalContext.current
+    val context = LocalContext.current as Activity
 
     Box(modifier) {
         Image(
@@ -201,10 +201,7 @@ fun DrinkingGreeting(message: String, modifier: Modifier = Modifier) {
 
 
         )
-        Button(onClick = {
-            val intent = Intent(context, MainActivity::class.java)
-            context.startActivity(intent)
-        }) {
+        Button(onClick = { context.finish() }) {
             Text("Go back")
         }
         DrinkingOptions(viewModel = DrinkingViewModel())

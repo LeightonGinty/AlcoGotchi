@@ -77,12 +77,12 @@ class CasinoActivity : ComponentActivity() {
 }
 
 class CasinoViewModel : ViewModel() {
-    val coin = mutableIntStateOf(0)
+    private val alcoGotchi = AlcoGotchi.getInstance()
+    val coin = mutableIntStateOf(alcoGotchi.coins)
 
     fun gamble(amount: Int, context: Context) {
-        val alcoGotchi = AlcoGotchi.getInstance()
         viewModelScope.launch {
-            runBlocking {
+            run {
                 try {
                     alcoGotchi.postGamble(amount)
                 } catch (e: Exception) {

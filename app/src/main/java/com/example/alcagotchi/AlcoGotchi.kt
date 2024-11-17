@@ -55,12 +55,14 @@ class AlcoGotchi private constructor() {
         drunk = json.getJSONObject("data").getInt("drunk")
     }
 
-    fun getState() {
+    suspend fun getState() {
         val request = Request.Builder()
             .url(buildUrl(""))
             .build()
 
-        client.newCall(request).enqueue(basicCallback)
+        return withContext(Dispatchers.IO) {
+            handleStateResponse(client.newCall(request).execute())
+        }
     }
 
     suspend fun postGamble(amount: Int) {
