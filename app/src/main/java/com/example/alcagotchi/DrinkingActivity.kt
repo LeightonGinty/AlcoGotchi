@@ -34,6 +34,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -137,12 +138,29 @@ class DrinkingViewModel : ViewModel() {
 
 @Composable
 fun DrinkingOptions(viewModel: DrinkingViewModel, modifier: Modifier = Modifier) {
+    val drunk by viewModel.drunk
+
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val context = LocalContext.current as Activity
-
+        Text(
+            text = "Number of units drank:",
+            fontSize = 36.sp,
+            color = Color(0xFF00FF00),
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .padding(end = 16.dp)
+        )
+        Text(
+            text = drunk.toString(),
+            fontSize = 36.sp,
+            color = Color(0xFF00FF00),
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .padding(end = 16.dp)
+        )
         Text(
             text = "What would you like to drink?",
             fontSize = 36.sp,
