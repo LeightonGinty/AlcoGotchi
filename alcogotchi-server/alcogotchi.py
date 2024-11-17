@@ -270,12 +270,13 @@ class Server:
       
 ap = network.WLAN(network.AP_IF)
 ap.active(True)
-ap.config(essid="Your mum", password="password123")
+ap.config(essid="Alcogotchi", password="password123")
 print("Connection avalible on {0}".format(ap.ifconfig()))
 CLUB =  "c2:2 c d# c:1 f:2 c:1 f:2 f# g c c g c:1 f#:2 c:1 f#:2 f d# "
 
 def the_club():
-  buzzer.melody(CLUB)
+  for i in range(3):
+    buzzer.melody(CLUB)
   
 server = Server()
 
