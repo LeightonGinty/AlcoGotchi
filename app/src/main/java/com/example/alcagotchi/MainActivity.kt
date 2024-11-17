@@ -173,6 +173,12 @@ fun GreetingText(viewModel: MainViewModel, message: String, from: String, modifi
             }) {
                 Text("Earn money")
             }
+            Button(onClick = {
+                val intent = Intent(context, PartyActivity::class.java)
+                context.startActivity(intent)
+            }) {
+                Text("Start a Party")
+            }
         } else {
             Text(
                 text = "connecting... plz wait",
